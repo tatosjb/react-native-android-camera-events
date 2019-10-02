@@ -5,6 +5,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ImageStore,
+  ToastAndroid,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 
@@ -17,8 +19,8 @@ export default class AppCamera extends React.Component {
             this.camera = ref;
           }}
           style={styles.preview}
-          type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.on}
+          type={RNCamera.Constants.Type.front}
+          flashMode={RNCamera.Constants.FlashMode.off}
           androidCameraPermissionOptions={{
             title: 'Permission to use camera',
             message: 'We need your permission to use your camera',
@@ -44,6 +46,11 @@ export default class AppCamera extends React.Component {
     if (this.camera) {
       const options = {quality: 0.5, base64: true};
       const data = await this.camera.takePictureAsync(options);
+      ImageStore.getBase64ForTag(data.uri, base64 => {
+        ImageStore.addImageFromBase64(base64, () => {
+          ToastAndroid.show('Imagem salva com sucesso', ToastAndroid.SHORT);
+        });
+      });
       console.log(data.uri);
     }
   };
