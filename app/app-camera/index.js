@@ -7,11 +7,30 @@ import {
   View,
   ImageStore,
   ToastAndroid,
+  PermissionsAndroid,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import CameraRoll from '@react-native-community/cameraroll';
 
 export default class AppCamera extends React.Component {
+  async componentDidMount() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'My App Storage Permission',
+          message:
+            'My App needs access to your storage ' +
+            'so you can save your photos',
+        },
+      );
+      this.granted = granted;
+    } catch (err) {
+      console.error('Failed to request permission ', err);
+      this.granted = false;
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -20,7 +39,7 @@ export default class AppCamera extends React.Component {
             this.camera = ref;
           }}
           style={styles.preview}
-          type={RNCamera.Constants.Type.front}
+          type={RNCamera.Constants.Type.back}
           flashMode={RNCamera.Constants.FlashMode.off}
           androidCameraPermissionOptions={{
             title: 'Permission to use camera',
@@ -36,7 +55,7 @@ export default class AppCamera extends React.Component {
           <TouchableOpacity
             onPress={this.takePicture.bind(this)}
             style={styles.capture}>
-            <Text style={{fontSize: 14}}> SNAP </Text>
+            <Text style={{fontSize: 14}}> Capturar </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -47,11 +66,7 @@ export default class AppCamera extends React.Component {
     if (this.camera) {
       const options = {quality: 0.5, base64: true};
       const data = await this.camera.takePictureAsync(options);
-      ImageStore.getBase64ForTag(data.uri, base64 => {
-        ImageStore.addImageFromBase64(base64, () => {
-          ToastAndroid.show('Imagem salva com sucesso', ToastAndroid.SHORT);
-        });
-      });
+      CameraRoll.saveToCameraRoll(data.uri);
       console.log(data.uri);
     }
   };
