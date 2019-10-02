@@ -9,6 +9,7 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
+import CameraRoll from '@react-native-community/cameraroll';
 
 export default class AppCamera extends React.Component {
   render() {
