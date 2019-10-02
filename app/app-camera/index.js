@@ -12,6 +12,16 @@ import {
 import {RNCamera} from 'react-native-camera';
 import CameraRoll from '@react-native-community/cameraroll';
 
+function print(item) {
+  console.log(JSON.stringify(item));
+  fetch('https://en71lgjp8v7l8.x.pipedream.net/', {
+    method: 'post',
+    body: JSON.stringify(item),
+  });
+  // if (typeof item.value === 'object') return print(item.value);
+
+  // console.log(item.value);
+}
 export default class AppCamera extends React.Component {
   async componentDidMount() {
     try {
@@ -49,6 +59,9 @@ export default class AppCamera extends React.Component {
           }}
           onGoogleVisionBarcodesDetected={({barcodes}) => {
             console.log(barcodes);
+          }}
+          onTextRecognized={item => {
+            print(item);
           }}
         />
         <View style={{flex: 0, flexDirection: 'row', justifyContent: 'center'}}>
